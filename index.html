@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>AI Course Quiz</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --c: #fff;
+        --t: #1f2937;
+        --m: #6b7280;
+        --p: #6366f1;
+        --ok: #16a34a;
+        --okb: #dcfce7;
+        --no: #dc2626;
+        --nob: #fee2e2;
+        --b: #e5e7eb;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #111827;
+          --c: #1f2937;
+          --t: #f3f4f6;
+          --m: #9ca3af;
+          --p: #818cf8;
+          --okb: #14532d;
+          --nob: #7f1d1d;
+          --b: #374151;
+        }
+      }
+      * {
+        box-sizing: inherit;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--t);
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 720px;
+        margin: auto;
+        padding: 16px;
+      }
+      .card {
+        background: var(--c);
+        border: 1px solid var(--b);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+      h1 {
+        font-size: 1.3rem;
+        margin: 4px 0 12px;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button,
+      select {
+        font: inherit;
+        border: 1px solid var(--b);
+        background: var(--c);
+        color: var(--t);
+        border-radius: 10px;
+        padding: 8px 14px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--p);
+      }
+      button.on,
+      button.pri {
+        background: var(--p);
+        color: #fff;
+        border-color: var(--p);
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .opt {
+        display: block;
+        width: 100%;
+        text-align: left;
+        margin: 8px 0;
+      }
+      .opt.ok {
+        background: var(--okb);
+        border-color: var(--ok);
+      }
+      .opt.no {
+        background: var(--nob);
+        border-color: var(--no);
+      }
+      .opt.sel {
+        border-color: var(--p);
+        background: var(--p);
+        color: #fff;
+      }
+      .bar {
+        height: 8px;
+        background: var(--b);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: var(--p);
+        transition: width 0.3s;
+      }
+      .m {
+        color: var(--m);
+        font-size: 0.9rem;
+      }
+      pre {
+        background: var(--bg);
+        border: 1px solid var(--b);
+        padding: 12px;
+        border-radius: 10px;
+        overflow-x: auto;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        margin: 6px 0;
+      }
+      table.t {
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        min-width: 100%;
+      }
+      table.t td,
+      table.t th {
+        border: 1px solid var(--b);
+        padding: 5px 8px;
+        text-align: center;
+      }
+      .fig {
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+      math {
+        font-size: 1.15em;
+      }
+      .ex {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background: var(--bg);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>AI Course Quiz</h1>
+      <div id="app"></div>
+    </main>
+    <script>
+      const R =
+        `1~Which is the first stage in the AI project cycle?~Data Acquisition~Problem Scoping~Modeling~Data Exploration~1
+1~Which stage collects data relevant to the problem?~Data Acquisition~Problem Scoping~Data Exploration~Evaluation~0
+1~Which stage analyzes data and identifies patterns?~Data Acquisition~Data Exploration~Modeling~Evaluation~1
+1~In which stage is a machine learning model created?~Data Exploration~Problem Scoping~Modeling~Evaluation~2
+1~Purpose of the Evaluation stage?~Define the problem scope~Test and assess the model's performance~Acquire data~Create visualizations~1
+1~Correct sequence of AI project cycle stages?~Scoping, Exploration, Acquisition, Modeling, Evaluation~Acquisition, Scoping, Exploration, Evaluation, Modeling~Scoping, Acquisition, Exploration, Modeling, Evaluation~Evaluation, Scoping, Modeling, Acquisition, Exploration~2
+1~Which AI field makes machines learn from data like humans learn from experience?~Searching~Logic~Machine Learning~Biological neural networks~2
+1~Which field uses mathematical logic to execute computer programs?~Searching~Logic~Machine Learning~Genetic Algorithm~1
+1~Which field is applied in chess and tic-tac-toe to find the optimal solution?~Searching~Logic~Machine Learning~Genetic Algorithm~0
+1~What inspires Artificial Neural Networks?~Searching~Biological neural networks~Machine Learning~Genetic Algorithm~1
+1~Which field solves problems using multiple solutions to find the best one?~Searching~Logic~Machine Learning~Genetic Algorithm~3
+1~Applications of Artificial Neural Networks?~Logic execution, knowledge representation~Game searching, genetic algorithms~Robotics, speech recognition, speech processing~Problem-solving, knowledge acquisition~2
+1~Purpose of Knowledge Representation?~Simulate human learning~Search optimal solutions in games~Execute programs using logic~Represent facts in a way machines can understand~3
+1~Example of a human agent's sensor?~Hands~Eyes~Legs~Mouth~1
+1~Role of an agent in AI?~Operate solely in a database~Perceive environment via sensors and act via effectors~Create databases of sensory data~Analyze data with logic and ML~1
+1~How does a software agent typically interact with its environment?~Through bit strings as programs and actions~Using hands and legs~With cameras and actuators~Keyboard and mouse~0
+1~Which best describes an effector?~Device that collects information~System that analyzes data~Component enabling an agent to act on the environment~Tool that encodes information~2
+1~How do users generally view computers?~As a language for creating code~As a set of tools for various tasks~As a way to learn programming~As a medium for building software~1
+1~A main reason to become a programmer?~Only use existing programs~Create tools and solutions for various tasks~Avoid working with code~Eliminate the need for computers~1
+1~What is a "program" or "code"?~A sequence of stored instructions~A method of storing data only~A type of hardware~A list of internet resources~0
+1~What does programming allow us to do with knowledge?~Keep it private~Encode and share it to save time and energy~Use it only for storage~Restrict it to specific computers~1
+1~Main role of the CPU?~Store data permanently~Run the program by deciding "what to do next"~Provide input~Serve as primary memory~1
+1~Which is NOT an input device?~Keyboard~Mouse~Touch Screen~Printer~3
+1~Key characteristic of RAM?~Permanent storage~Retains data after reboot~Fast, temporary; data lost on reboot~Slow, used for backup~2
+1~Which is an output device?~Mouse~Screen~Touch Screen~Keyboard~1
+1~Which language is NOT commonly used for AI?~Lisp~Python~Prolog~HTML~3
+1~What is Secondary Memory used for?~Temporary storage cleared on reboot~Fast data processing~Permanent storage until data is deleted~Processing instructions quickly~2
+1~Which best describes the CPU?~The "brains": very smart and fast~Very fast but not exactly "smart"~Only stores programs~Only input and output~1
+1~Primary advantage of Python for AI?~Complex syntax~Lack of data science libraries~Simple syntax and less coding~Limited portability~2
+1~Which Python library is used for data manipulation and analysis?~matplotlib~Pandas~NumPy~Sklearn~1
+1~Python is classified as?~Compiled~Interpreted~Machine-specific~Assembly~1
+1~What is 'syntax' in Python?~Platform compatibility~Set of commands and structures used in code~A type of GUI~Output shown to the user~1
+1~Which Python feature reduces coding in AI projects?~Complex syntax~Built-in libraries such as NumPy and SciPy~Extensive compilation~Lack of community support~1
+2~In traditional programming, what produces the output?~Data and output~Program and output~Data and program~Features and labels~2
+2~In Machine Learning, what is used to create a program?~Data and output~Program and output~Data and program~Features and labels~0
+2~Main purpose of supervised machine learning?~Group data into clusters~Find associations~Predict outputs from inputs using a model~Perform reinforcement actions~2
+2~Which is NOT a supervised algorithm type?~Clustering~Regression~Classification~Linear Regression~0
+2~When should you use regression?~To predict continuous variables~No input-output relationship~To classify data into groups~Output is categorical~0
+2~Which is a popular regression algorithm?~Clustering~Polynomial Regression~Association~Reinforcement Learning~1
+2~Example use of linear regression?~Predicting a product category~Grouping customers by behavior~Predicting house prices from square footage~Finding associations between items~2
+2~Which technique is common in unsupervised learning?~Regression~Classification~Clustering~Reinforcement~2
+2~Which learning type uses feedback based on actions taken?~Supervised~Unsupervised~Reinforcement~Classification~2
+2~Using the table (Experience→Salary: 1→500, 5→1400, 10→2300, 15→3000, 20→3500, 25→4500, 30→5200), what is the expected salary for 12 years of experience in traditional programming?~2600~2400~Undefined~2300~2
+2~In Y=aX+b, what does Y represent?~The independent variable~A constant value~The predicted output (dependent variable)~The input feature~2
+2~Term for the independent variable in linear regression?~Labels~Output~Target~Features~3
+2~The dependent variable in linear regression is also known as:~Input~Features~Output~Experience~2
+2~Linear regression predicts the output based on:~Theoretical data only~Input-output pairs from historical data~Future data only~Target values alone~1
+2~Purpose of finding parameters a and b?~Define the equation of the line for predictions~Identify the dependent variable~Measure accuracy of predictions~Determine the target variable~0
+2~Once a and b are identified, what can the model predict?~Future X from known Y~Future Y from given X~Only historical values~Values of unrelated features~1
+2~Simplest model used in regression?~Polynomial regression~Linear regression~Decision tree~Logistic regression~1
+2~Purpose of the hyper-plane in linear regression?~Separate points into groups~Fit the data by "going through" the points~Minimize the residue for all points~Identify clusters~1
+2~Difference between a predicted point and the actual observation is called:~Error rate~Deviation~Gradient~Residue~3
+2~What is meant by "fitting the data"?~Changing data to match desired output~Using a line to approximate the trend of the data~Selecting points that deviate most~Ignoring points with high residues~1
+2~Function that measures the error between real and predicted output?~Slope function~Prediction function~Cost function~Residue function~2
+2~Purpose of the cost function J?~Maximize the difference between real and predicted values~Calculate the slope~Minimize the error between real y and predicted ŷ~Measure total points on the line~2
+2~Purpose of the learning rate α?~Minimize J(θ0,θ1)~Control the update speed of the cost function J(θ0,θ1)~Make the line pass through all points~Reduce data points needed~1
+2~What happens when α is too high?~J reaches the minimum smoothly~Updates become drastic, possibly leading to divergence~Converges to optimum faster~Learning rate does not affect outcome~1
+2~Effect of a very small α?~Converges too quickly~Overfitting~Takes a long time to reach the minimum of J~Large fluctuations in cost~2
+2~Which equation estimates θ1 (and θ0) for linear regression?~θ0 = (nΣxy − ΣxΣy) / (nΣx² − (Σx)²)~θ1 = (Σy − θ0Σx) / n~θ1 = (nΣxy − ΣxΣy) / (nΣx² − (Σx)²)~θ0 = θ1x + y~2
+2~In h(x)=θ0+θ1x, what does θ0 represent?~Slope of the line~y-intercept of the line~Cost function~Input variable~1
+2~In h(x)=θ0+θ1x, what does θ1 represent?~Slope of the line~y-intercept of the line~Cost function~Input variable~0
+2~The "optimal learning rate" is:~Converges slowly but guarantees accuracy~Causes drastic updates to reach the minimum quickly~Reaches the minimum of J(θ) smoothly and efficiently~Makes the cost increase over time~2
+3~Purpose of the pandas library?~Creating ML models~Visualizing data in plots~Data manipulation and analysis, especially structured data~Complex mathematical calculations~2
+3~Library for numerical computations and arrays?~matplotlib~seaborn~pandas~NumPy~3
+3~Which library splits the dataset into training and testing sets?~pandas~sklearn.preprocessing~sklearn.model_selection~numpy~2
+3~Library for attractive statistical graphics?~matplotlib~seaborn~pandas~NumPy~1
+3~Which library provides the LinearRegression class?~matplotlib~sklearn.linear_model~pandas~NumPy~1
+3~Import for a simple line graph?~matplotlib~sklearn.linear_model~matplotlib.pyplot~NumPy~2
+3~Main purpose of train_test_split?~Apply polynomial transformation~Visualize the data~Divide data into training and testing subsets~Apply linear regression~2
+3~Library with a high-level interface for attractive statistical plots?~matplotlib~seaborn~pandas~NumPy~1
+3~Main purpose of LinearRegression in the code?~Create polynomial features~Split data into train and test sets~Fit a linear model to the data~Visualize data in a line plot~2
+3~train_test_split requires which parameters?~Data, test size, random state (optional)~Polynomial degree, data, test size~Linear model, data, random state~Visualizer, data, polynomial features~0
+3~With PolynomialFeatures, which argument increases model complexity?~random_state~test_size~degree~alpha~2
+3~Library for box plots and heatmaps?~pandas~matplotlib.pyplot~seaborn~sklearn.model_selection~2
+3~Which train_test_split parameter sets the test set proportion?~alpha~degree~test_size~random_state~2
+3~Which LinearRegression method trains the model?~predict()~fit()~transform()~evaluate()~1
+3~Which library creates arrays and computes mean, median, standard deviation?~pandas~matplotlib.pyplot~seaborn~numpy~3
+3~With PolynomialFeatures, what happens if degree=3?~Fits a third-degree polynomial to the data~Transforms data into a three-dimensional array~Generates three polynomial features~Test set size is tripled~0
+3~Which matplotlib.pyplot function displays a scatter plot?~scatter()~line()~plot()~bar()~0
+3~A main requirement when using Gradient Descent?~No need to choose a learning rate α~No iterations needed~You need to choose a learning rate α~No need to scale features~2
+3~Which method is preferred if the number of features n is large?~Normal Equation~Gradient Descent~Both equally suitable~Neither~1
+3~Why might the Normal Equation be slower than Gradient Descent?~Requires many iterations~Must compute the inverse of (XᵀX)~Requires choosing a learning rate~Requires feature scaling~1
+3~When is the Normal Equation generally preferred?~n is very large~n is not too large~Feature scaling is required~Dataset is very large (high m)~1
+3~Which statement about Gradient Descent is TRUE?~Calculates parameters directly without iteration~Fewer calculations when n is small~Updates parameters iteratively to minimize the cost function~Only suitable for classification~2
+3~What does the Normal Equation do to minimize the cost function?~Iteratively adjusts parameters~Sets the partial derivatives of the cost function to zero~Scales features~Chooses a learning rate~1
+3~Disadvantage of the Normal Equation when n is large?~Many iterations~Needs a learning rate~Computationally expensive due to matrix inversion~Requires feature scaling~2
+3~When would you use Gradient Descent instead of the Normal Equation?~Small number of features~n is very large~Feature scaling not possible~Few training examples~1
+3~Which statement is true about Gradient Descent vs Normal Equation?~Always equally efficient~Gradient Descent is faster with few features~Normal Equation is preferable with few features~Gradient Descent fails on large datasets~2
+1~(Diagram question, converted to multiple choice) Correct order of the five AI project cycle stages?~Scoping, Acquisition, Exploration, Modeling, Evaluation~Acquisition, Scoping, Exploration, Evaluation, Modeling~Scoping, Exploration, Acquisition, Modeling, Evaluation~Evaluation, Scoping, Modeling, Acquisition, Exploration~0
+4~In gradient descent, what does alpha α represent?~The cost function~The learning rate~Number of iterations~The input feature~1
+4~What happens to θj after each update?~Stays the same~Increased by a constant~Updated to minimize the cost function~Multiplied by the learning rate~2
+4~Multivariate linear regression hypothesis h(x)?~θ0+θ1x1~θ0+θ1x1+θ2x2~θ0+θ1x1+θ2x2+…+θnxn~θnxn~2
+4~Purpose of cost_array in gradient_descent?~Store parameters~Track cost values during iterations~Store feature values~Calculate learning rate~1
+4~What does cost_function(X, y, theta) calculate?~Gradient of the cost~Number of features~Cost and error for the current θ~Learning rate per iteration~2
+4~Primary goal of gradient descent?~Increase parameter values~Maximize the cost function~Minimize the cost function~Reduce number of features~2
+4~In the GD formula, what does (1/m)Σ(hθ(x)−y)·xj represent?~Sum of feature values~Average error in prediction~Gradient of the cost function with respect to θ~Learning rate~2
+4~In multivariate linear regression, what does each θ represent?~A feature in the dataset~The output value~A weight/coefficient for a specific feature~The predicted value~2
+4~Why multiply by (1/m) in the θ update?~Calculate learning rate~Normalize features~Get the average gradient over all training examples~Convert output to probabilities~2
+4~Which factor affects gradient descent convergence speed?~Number of features~Value of the learning rate (α)~The cost function~Number of samples~1
+4~If α is too high in multivariate regression?~Converges too slowly~Fails to converge or oscillates~Finds optimum quickly~Cost decreases smoothly~1
+4~What does np.dot(X.T, error) compute?~Element-wise product of X and error~Dot product of the transpose of X and error~Mean of X and error~Sum of squares~1
+4~Purpose of the iters parameter?~Control learning rate~Set number of features~Define the maximum number of iterations~Define batch size~2
+4~If gradient descent is not converging, what could help?~Increase iterations~Decrease learning rate~Check feature scaling~All of the above~3
+4~Target variable is continuous: which task?~Classification~Regression~Clustering~Dimensionality Reduction~1
+4~Key characteristic of a classification algorithm?~Predicts continuous values~Clusters unlabeled data~Classifies data into predefined categories~Reduces dimensionality~2
+4~Example of binary classification?~Predicting city temperature~Recognizing handwritten characters (A-Z)~Determining if an email is spam or not~Predicting animal type (cat, dog, horse)~2
+4~Which type of target variable does classification use?~Continuous~Categorical~Binary only~Numeric~1
+4~A classification task with more than two classes is:~Binary classification~Unsupervised classification~Multi-class classification~Multi-level classification~2
+4~Which is NOT typically a classification application?~Face recognition~Spam detection~Medical diagnosis~Stock price prediction~3
+4~Primary difference between regression and classification?~Regression: continuous outputs; classification: categorical outputs~Regression uses labeled data, classification does not~Classification always has two classes~Classification is unsupervised, regression supervised~0
+4~Which best describes clustering?~Categorizes data using labeled examples~Groups data by similarity without labeled data~Predicts continuous values~Reduces dimensionality~1
+4~Typical multi-class problem?~Spam or not spam~Classifying animals as cat, dog, or bird~Predicting house prices~Clustering customers~1
+4~Algorithm type implemented to perform classification?~Regressor~Clusterer~Classifier~Dimensional Reducer~2
+4~Which is a linear model used for classification?~Decision Tree~Naïve Bayes~Logistic Regression~K-Nearest Neighbors~2
+4~Which algorithm handles both linear and non-linear classification?~Decision Tree~Naïve Bayes~Random Forest~Support Vector Machine (SVM)~3
+4~Main difference of multi-label classification?~Each example gets exactly one class~Each example can get zero or more classes~Only continuous targets~Only two classes~1
+4~Best strategy to implement SVM for multi-class tasks?~One-versus-rest~Binary transformation~One-versus-one~Multi-label transformation~2
+4~One-versus-one: classifiers for a 4-class problem? (N(N−1)/2)~4~6~8~12~1
+4~One-versus-rest: classifiers for a 5-class problem?~4~5~10~15~1
+4~Which is NOT typically used in multi-label classification?~Multi-label Decision Trees~Multi-label Gradient Boosting~One-versus-rest strategy~K-Means Clustering~3
+4~Example of multi-label classification?~Spam or not spam~Pet type (cat, dog, bird)~Topics in a document where multiple may apply~House price~2
+4~Predicting multiple non-exclusive labels per example (e.g. objects in an image)?~Binary~Multi-class~Multi-label~Hierarchical~2
+4~Suitable multi-label application?~Spam or not spam~Predicting age~Whether an image contains both a dog and a cat~Product price range~2
+4~Which approach lets a binary algorithm handle multi-class by creating classifiers per class?~One-versus-rest~One-versus-all~Both A and B~None of the above~2
+4~3 classes (A, B, C): how does one-versus-rest create classifiers?~A vs (B+C), B vs (A+C), C vs (A+B)~A vs B, B vs C, C vs A~Only one classifier~None of the above~0
+4~Which classification algorithm is non-linear?~Logistic Regression~Decision Tree~Linear SVM~Linear Regression~1
+4~Which statement about multi-label classification is true?~Exactly one of multiple classes~Only used in clustering~Only with continuous targets~Each example can have multiple labels~3
+4~Which statement about binary classifiers is true?~Used exclusively for multi-class~Can only classify two possible outcomes~Can be used in regression~Cannot be adapted to multi-class~1
+4~One-versus-one for a 5-class problem: classifiers needed?~5~10~15~20~1
+4~Example of an imbalanced classification problem?~Images as day or night~Likelihood of fraudulent bank transactions~Cats, dogs, birds with equal distribution~Coin toss heads or tails~1
+4~Example of a lazy learner?~Logistic Regression~SVM~K-Nearest Neighbor~Decision Tree~2
+4~Main characteristic of lazy learners?~Build a model immediately~Predict quickly after training~Memorize training data and search nearest neighbor at prediction~More training time, less prediction time~2
+4~Which is NOT an eager learner?~Logistic Regression~SVM~Case-based reasoning~Artificial Neural Networks~2
+4~Binomial logistic regression dependent variable?~3+ ordered categories~Two possible types, such as Yes or No~Continuous values~3+ unordered categories~1
+4~Logistic regression for "Low", "Medium", "High"?~Binomial~Multinomial~Ordinal~Continuous~2
+4~Which statement about logistic regression is true?~Gives exact 0 or 1~Predicts continuous values~Gives probabilities between 0 and 1~Used for clustering~2
+4~Example of multinomial classification?~Pass or fail~Species as cat, dog, or sheep~Tall or short~In stock or out of stock~1
+4~Main difference between eager and lazy learners?~Eager do not build a model~Lazy build a model before prediction~Eager train in advance; lazy memorize data and search at prediction~Lazy need less prediction time~2
+4~Techniques for imbalanced classification?~Sampling techniques~Cost-sensitive algorithms~Dimensionality reduction~Both A and B~3
+4~Function mapping values to a probability between 0 and 1?~Linear~Exponential~Sigmoid~Logarithmic~2
+4~Output range of the sigmoid function?~−1 and 1~0 and 1~−∞ and ∞~0 and ∞~1
+4~Hypothesis function h(x) in logistic regression?~θ0+θ1x~1 / (1 + e^(−θᵀx))~e^(θ0+θ1x)~θ0−θ1x~1
+4~If p(success)=pa, probability of failure?~1+pa~1−pa~e^(−pa)~1/pa~1
+4~Term for the log-likelihood function to maximize?~Error function~Hypothesis function~Likelihood function j(θ)~Sigmoid function~2
+4~Method to find optimal θ in logistic regression?~Simple linear regression~Gradient Descent Algorithm~Exponential smoothing~KNN~1
+4~Product of individual probabilities across the dataset is known as:~Maximum a posteriori~Maximum likelihood estimation~Bayesian estimation~Sum of squared errors~1
+4~What best describes ∂/∂θj j(θ)?~Hypothesis function~Partial derivative of the cost function with respect to θj, used for optimization~Sigmoid function~Probability function~1
+4~Goal when applying gradient descent to the likelihood function?~Minimize the sigmoid~Maximize the log-likelihood j(θ)~Minimize sum of squared errors~Maximize the linear function~1
+5~Difference between generative and discriminative models?~Generative distinguish classes; discriminative learn what each looks like~Generative model each class's features; discriminative separate classes~Discriminative generate samples~Discriminative only binary~1
+5~What type of classifier is logistic regression?~Generative~Discriminative~Supervised~Unsupervised~1
+5~Which classifier is a generative model?~Logistic Regression~Naive Bayes~Decision Trees~K-Nearest Neighbors~1
+5~Which logistic regression type is for binary classification?~Binomial~Multinomial~Ordinal~Gaussian~0
+5~What does the sigmoid function map?~Probabilities to real numbers~Real value to (−1,1)~Real value to the range (0,1)~Output to 0 or 1 directly~2
+5~What does weight wi represent?~Total probability of a feature~Importance of an input feature for classification~The bias term~Range of outputs~1
+5~Type for ordered categories "Low", "Medium", "High"?~Binomial~Multinomial~Ordinal~Continuous~2
+5~What does P(y=1|x) signify?~Observation does not belong to the class~Observation has positive sentiment / belongs to the class~Belongs to multiple classes~Features are independent~1
+5~Purpose of a decision boundary?~Separate different classes in the feature space~Calculate likelihood of each feature~Reduce dimensionality~Transform categorical data~0
+5~Primary goal of binary logistic regression?~Decide about regression output values~Classify into multiple categories~Make a binary decision about the class of a new input~Linear regression on binary data~2
+5~What does the bias term do?~Multiplies each feature~Adjusts weights~Is added to the weighted inputs to influence the decision~Represents feature importance~2
+5~What is P(y=1|x)?~Probability of negative sentiment~Neutral sentiment~Probability of positive sentiment~Model error~2
+5~What is P(y=0|x)?~Probability of negative sentiment~Neutral sentiment~Positive sentiment~Model error~0
+5~Mathematical form of the sigmoid (logistic) function?~σ(z)=1/(1+e^z)~σ(z)=e^(−z)~σ(z)=z~σ(z)=1/(1+e^(−z))~3
+5~Which characteristic makes sigmoid suitable for binary classification?~Maps any real value to between 0 and 1~Linear~Only outputs exactly 0 or 1~Only classifies positive classes~0
+5~What happens to sigmoid when z is very large or very small?~Becomes linear~Flattens towards 0 or 1~Becomes negative~Becomes random~1
+5~Range of the output y of the logistic function?~(−∞,+∞)~(−1,1)~(0,1)~[0,∞)~2
+5~Formula for f(x1,…,xn) in the logistic function?~a0+a1x1+…+anxn~e^(x1+x2+…+xn)~x1+x2+…+xn~a0·a1·x1···xn~0
+5~What does the exponent term −f(x1,…,xn) in the logistic function indicate?~Scales the output to between 0 and 1~Shifts the function vertically~Determines coefficient values~Limits output to negative values~0
+5~Threshold for predicting y=1 based on hθ(x)?~hθ(x) ≤ 0.5~hθ(x) ≥ 0.5~hθ(x) ≥ 0.7~hθ(x) < 1~1
+5~Which represents a nonlinear decision boundary?~g(θ0+θ1x1+θ2x2)~g(θ0+θ1x1+θ2x2+θ3x1²+θ4x2²)~g(θ0+θ1x1)~g(θ0+θ1x2)~1
+5~g(z)=1/(1+e^(−z)) represents:~Linear decision boundary~Sigmoid function for mapping predictions~Error function~Feature scaling function~1
+5~Purpose of the cost function in logistic regression?~Measure how well parameters fit the training data~Predict output for new data~Calculate probability the model is correct~Determine the bias~0
+5~Logistic regression cost for y=1?~−log(1−hθ(x))~−log(hθ(x))~hθ(x)~(hθ(x)−y)²~1
+5~Logistic regression cost for y=0?~−log(1−hθ(x))~−log(hθ(x))~hθ(x)~(hθ(x)−y)²~0
+5~What does hθ(x) represent?~Actual output value~Hypothesis / predicted probability~Cost of prediction~Bias term~1
+5~What values can output y take in the logistic cost function?~Any real number~Only binary values (0 or 1)~Positive integers~Negative values~1
+5~Gradient descent update rule for θj?~θj + α Σ(hθ(x)−y)xj~θj − α Σ(hθ(x)−y)xj~θj − α Σ(hθ(x)+y)xj~θj + α Σ(hθ(x)+y)xj~1
+5~What does learning rate α control?~Direction of descent~Speed or step size of each iteration~Number of training examples~Shape of the cost function~1
+5~Goal of adjusting θ0 and θ1 in gradient descent?~Reach a higher cost value~Reduce the cost function value~Find the exact value of α~Increase number of examples~1
+5~Tumor example: purpose of the logistic regression model?~Classify tumor sizes as cancerous or non-cancerous~Predict exact tumor size~Identify tumor types~Calculate average tumor size~0
+5~Tumor example: which library implements logistic regression?~TensorFlow~NumPy~Scikit-learn~Pandas~2
+5~Output of logr.predict(numpy.array([3.46]).reshape(-1,1))?~Probability that size 3.46 is cancerous~Prediction of whether a tumor of size 3.46 is cancerous or not~Size of a tumor~Coefficients of the model~1
+5~Which function trains the model?~logr.predict()~logr.fit()~logr.train()~logr.model()~1
+5~Why use reshape(-1,1) on X?~Make X 2-dimensional, as scikit-learn requires~Normalize values~Increase range of values~Convert X to 1-dimensional~0
+5~What does logr.predict() output here?~Continuous probability between 0 and 1~Predicted label, either 0 or 1~Reshaped input data~Actual tumor size~1
+5~If the model predicts "0" for a tumor size, this indicates:~Tumor is cancerous~Tumor is not cancerous~Tumor is malignant~Tumor is benign and needs testing~1
+5~What does "1" in output variable Y represent?~Tumor not cancerous~Tumor is cancerous~Tumor size is large~Tumor size is small~1
+5~Effect of increasing tumor sizes in the input data (e.g. 3.78 to 6.78)?~Model predicts more cancerous cases~Model predicts fewer cancerous cases~No effect on predictions~Changes model structure~0
+5~Purpose of importing numpy here?~Handle data reshaping and array manipulation~Import the logistic regression model~Visualize data~Perform normalization~0
+5~Shape of X after reshape(-1,1)?~1-dimensional array~2-dimensional array with one column~2-dimensional array with two columns~Unchanged~1
+5~Very high learning rate in logistic regression training?~Converges more accurately~May not converge; oscillates around the minimum~Only predicts zeros~Training data reshaped differently~1`
+          .split("\n")
+          .map((l, i) => {
+            const p = l.split("~");
+            return { id: i, lec: p[0], q: p[1], o: p.slice(2, 6), a: +p[6] };
+          });
+      const DG =
+          '<svg viewBox="0 0 440 130" width="100%" style="max-width:440px" aria-label="Five connected nodes"><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0L6,3L0,6z" fill="#6b7280"/></marker></defs><g stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"><line x1="80" y1="56" x2="102" y2="72"/><line x1="160" y1="72" x2="182" y2="56"/><line x1="240" y1="56" x2="262" y2="72"/><line x1="320" y1="72" x2="342" y2="56"/></g><g fill="#93c5fd" stroke="#3b82f6"><ellipse cx="50" cy="40" rx="38" ry="22"/><ellipse cx="130" cy="90" rx="38" ry="22"/><ellipse cx="210" cy="40" rx="38" ry="22"/><ellipse cx="290" cy="90" rx="38" ry="22"/><ellipse cx="370" cy="40" rx="38" ry="22"/></g><g fill="#1f2937" font-size="14" text-anchor="middle"><text x="50" y="45">1</text><text x="130" y="95">2</text><text x="210" y="45">3</text><text x="290" y="95">4</text><text x="370" y="45">5</text></g></svg>',
+        TB =
+          '<table class="t"><tr><th>Experience</th><td>1 year</td><td>5 years</td><td>10 years</td><td>15 years</td><td>20 years</td><td>25 years</td><td>30 years</td></tr><tr><th>Salary</th><td>500</td><td>1400</td><td>2300</td><td>3000</td><td>3500</td><td>4500</td><td>5200</td></tr></table>',
+        CODE =
+          '<p class="m">Example: a logistic regression object represents whether or not a tumor is cancerous (0 = No, 1 = Yes) based on the tumor size:</p><pre>import numpy\nfrom sklearn import linear_model\n\n#Reshaped for Logistic function.\nX = numpy.array([3.78, 2.44, 2.09, 0.14, 1.72, 1.65, 4.92, 4.37, 4.96, 4.52, 3.69, 5.88]).reshape(-1,1)\ny = numpy.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])\n\nlogr = linear_model.LogisticRegression()\nlogr.fit(X,y)\n\n#predict if tumor is cancerous where the size is 3.46mm:\npredicted = logr.predict(numpy.array([3.46]).reshape(-1,1))\nprint(predicted)</pre>';
+      const M = (x) => "<math>" + x + "</math>",
+        T = (x) => "<mtext>" + x + "</mtext>",
+        I = (x) => "<mi>" + x + "</mi>",
+        O = (x) => "<mo>" + x + "</mo>",
+        N = (x) => "<mn>" + x + "</mn>",
+        SB = (a, b) => "<msub>" + a + b + "</msub>",
+        SP = (a, b) => "<msup>" + a + b + "</msup>",
+        FR = (a, b) => "<mfrac>" + a + b + "</mfrac>",
+        RW = (x) => "<mrow>" + x + "</mrow>";
+      const t0 = SB(I("θ"), N(0)),
+        t1 = SB(I("θ"), N(1)),
+        tj = SB(I("θ"), I("j")),
+        QN = "n∑xy−∑x∑y",
+        DN = "n∑x²−(∑x)²",
+        par = RW(O("(") + I("i") + O(")")),
+        hx = SB(I("h"), I("θ")) + O("(") + SP(I("x"), par) + O(")"),
+        yi = SP(I("y"), par),
+        xj = "<msubsup>" + I("x") + I("j") + par + "</msubsup>",
+        sm =
+          "<munderover>" +
+          O("∑") +
+          RW(I("i") + O("=") + N(1)) +
+          I("m") +
+          "</munderover>",
+        neg = RW(O("−") + I("z")),
+        hh = I("h") + O("(") + I("x") + O(")");
+      const ex = (l, p) =>
+          M(T(l + "(z)=") + FR(N(1), RW(N(1) + O("+") + SP(I("e"), p)))),
+        upd = (s, p) =>
+          M(tj + O(s) + I("α") + sm + O("(") + hx + O(p) + yi + O(")") + xj);
+      const OV = {
+        "(Diagram question": {
+          q: "Put the five AI project cycle stages in the correct order, following the arrows in the diagram.",
+          fig: DG,
+        },
+        "Using the table": {
+          q: "Based on the following data, what is the expected salary for someone with 12 years of experience in traditional programming?",
+          fig: TB,
+        },
+        "Which equation estimates": {
+          o: [
+            M(t0 + O("=") + FR(T(QN), T(DN))),
+            M(t1 + O("=") + FR(T("∑y−θ0∑x"), I("n"))),
+            M(t1 + O("=") + FR(T(QN), T(DN))),
+            M(t0 + O("=") + t1 + I("x") + O("+") + I("y")),
+          ],
+        },
+        "In the GD formula": {
+          q: "In the gradient descent formula, what does the term below represent?",
+          fig: M(
+            FR(N(1), I("m")) +
+              sm +
+              O("(") +
+              hx +
+              O("−") +
+              yi +
+              O(")") +
+              O("·") +
+              xj,
+          ),
+        },
+        "Hypothesis function h(x) in logistic": {
+          o: [
+            M(hh + O("=") + t0 + O("+") + t1 + I("x")),
+            M(
+              hh +
+                O("=") +
+                FR(
+                  N(1),
+                  RW(
+                    N(1) +
+                      O("+") +
+                      SP(I("e"), RW(O("−") + SP(I("θ"), I("T")) + I("x"))),
+                  ),
+                ),
+            ),
+            M(hh + O("=") + SP(I("e"), RW(t0 + O("+") + t1 + I("x")))),
+            M(hh + O("=") + t0 + O("−") + t1 + I("x")),
+          ],
+        },
+        "What best describes": {
+          q: "In the context of logistic regression, which best describes the expression below?",
+          fig: M(
+            FR(O("∂"), RW(O("∂") + tj)) + I("j") + O("(") + I("θ") + O(")"),
+          ),
+        },
+        "Mathematical form of the sigmoid": {
+          o: [
+            ex("σ", I("z")),
+            M(T("σ(z)=") + SP(I("e"), neg)),
+            M(T("σ(z)=z")),
+            ex("σ", neg),
+          ],
+        },
+        "Formula for f(x1": {
+          o: [
+            "a<sub>0</sub>+a<sub>1</sub>x<sub>1</sub>+…+a<sub>n</sub>x<sub>n</sub>",
+            "e<sup>x<sub>1</sub>+x<sub>2</sub>+…+x<sub>n</sub></sup>",
+            "x<sub>1</sub>+x<sub>2</sub>+…+x<sub>n</sub>",
+            "a<sub>0</sub>·a<sub>1</sub>·x<sub>1</sub>⋯x<sub>n</sub>",
+          ],
+        },
+        "g(z)=1/(1+e": {
+          q: "In logistic regression, the function below represents:",
+          fig: ex("g", neg),
+        },
+        "Gradient descent update rule": {
+          o: [upd("+", "−"), upd("−", "−"), upd("−", "+"), upd("+", "+")],
+        },
+      };
+      R.forEach((q) => {
+        for (const k in OV) if (q.q.startsWith(k)) Object.assign(q, OV[k]);
+      });
+      R.slice(-12).forEach((q) => (q.fig = CODE));
+      const K = "aiquiz1",
+        L = "ABCD";
+      let S = Object.assign(
+          {
+            mode: "practice",
+            lec: "all",
+            i: 0,
+            ans: {},
+            ex: null,
+            t: 0,
+            done: false,
+          },
+          JSON.parse(localStorage.getItem(K) || "{}"),
+        ),
+        tm;
+      const save = () => {
+        try {
+          localStorage.setItem(K, JSON.stringify({ ans: S.ans, lec: S.lec }));
+        } catch (e) {}
+      };
+      const list = () =>
+        R.filter(
+          (q) =>
+            (S.lec == "all" || q.lec == S.lec) &&
+            (S.mode != "revision" ||
+              (S.ans[q.id] != null && S.ans[q.id] != q.a)),
+        );
+      function set(m) {
+        S.mode = m;
+        S.i = 0;
+        S.done = false;
+        clearInterval(tm);
+        if (m == "exam") {
+          S.ex = {};
+          S.t = Math.max(1, list().length) * 60;
+          tm = setInterval(() => {
+            if (--S.t <= 0) {
+              S.done = true;
+              clearInterval(tm);
+            }
+            draw();
+          }, 1000);
+        }
+        draw();
+      }
+      function pick(q, k) {
+        if (S.mode == "exam") {
+          S.ex[q.id] = k;
+        } else {
+          if (S.ans[q.id] != null && S.mode == "practice") return;
+          S.ans[q.id] = k;
+          save();
+        }
+        draw();
+      }
+      function draw() {
+        const l = list(),
+          q = l[S.i],
+          a = document.getElementById("app"),
+          sc = R.filter((x) => S.ans[x.id] == x.a).length;
+        let h = `<div class="card"><div class="row">${["practice", "exam", "revision"].map((m) => `<button class="${S.mode == m ? "on" : ""}" onclick="set('${m}')">${m[0].toUpperCase() + m.slice(1)}</button>`).join("")}<select onchange="S.lec=this.value;save();set(S.mode)"><option value="all">All lectures</option><option value="1" ${S.lec == "1" ? "selected" : ""}>Lecture 1</option><option value="2" ${S.lec == "2" ? "selected" : ""}>Lecture 2</option><option value="3" ${S.lec == "3" ? "selected" : ""}>Lecture 3</option><option value="4" ${S.lec == "4" ? "selected" : ""}>Lecture 4</option><option value="5" ${S.lec == "5" ? "selected" : ""}>Lecture 5</option></select><button onclick="if(confirm('Reset progress?')){S.ans={};save();set('practice')}">Reset</button></div>
+<p class="m">Answered ${Object.keys(S.ans).length}/${R.length} · Correct ${sc}${S.mode == "exam" ? ` · Time ${Math.floor(S.t / 60)}:${String(S.t % 60).padStart(2, "0")}` : ""}</p><div class="bar"><i style="width:${l.length ? ((S.i + 1) / l.length) * 100 : 0}%"></i></div></div>`;
+        if (!l.length)
+          h += `<div class="card">No questions here yet. ${S.mode == "revision" ? "Answer some in Practice first; wrong ones appear here." : ""}</div>`;
+        else if (S.done || (S.mode == "exam" && S.i >= l.length)) {
+          const c = l.filter((x) => S.ex[x.id] == x.a).length;
+          l.forEach((x) => {
+            if (S.ex[x.id] != null) S.ans[x.id] = S.ex[x.id];
+          });
+          save();
+          h += `<div class="card"><h2>Exam result: ${c}/${l.length} (${Math.round((c / l.length) * 100)}%)</h2><button class="pri" onclick="set('revision')">Review mistakes</button></div>`;
+        } else {
+          const v = S.mode == "exam" ? S.ex[q.id] : S.ans[q.id],
+            show = S.mode != "exam" && v != null;
+          h += `<div class="card"><p class="m">Lecture ${q.lec} · Question ${S.i + 1} of ${l.length}</p><h3>${q.q}</h3>${q.fig ? '<div class="fig">' + q.fig + "</div>" : ""}${q.o.map((o, k) => `<button class="opt ${show ? (k == q.a ? "ok" : k == v ? "no" : "") : v == k ? "sel" : ""}" onclick="pick(R[${q.id}],${k})">${L[k]}) ${o}</button>`).join("")}${show ? `<div class="ex">${v == q.a ? "✔ Correct." : "✘ Incorrect."} Answer: <b>${L[q.a]}) ${q.o[q.a]}</b> (per the source key)</div>` : ""}
+<div class="row" style="margin-top:12px"><button ${S.i ? "" : "disabled"} onclick="S.i--;draw()">Back</button><button class="pri" onclick="S.i++;if(S.mode!='exam'&&S.i>=${l.length})S.i=0;draw()">${S.mode == "exam" && S.i == l.length - 1 ? "Finish" : "Next"}</button></div></div>`;
+        }
+        a.innerHTML = h;
+      }
+      draw();
+    </script>
+  </body>
+</html>
